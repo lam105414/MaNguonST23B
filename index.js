@@ -1,10 +1,32 @@
-const http = require("node:http");
+const express = require("express");
+var morgan = require("morgan");
 
-let server = http.createServer((req, res) => {
-    res.writeHead(200, {"Content-Type": "text/html"})
-    res.end("<h1> hello server NodeJS</h1>");
+const app = express();
+app.use(morgan("combined"));
+app.set("views", "./views");
+app.set("view engine", "ejs");
+app.use(express.static("public"));
+
+app.get("/", (req, res) => {
+  res.render("home");
 });
 
-server.listen(3000, () =>{
-    console.log("server started!!!");
+app.get("/products", (req, res) => {
+  res.render("products");
+});
+
+app.get("/faqs", (req, res) => {
+  res.render("faqs");
+});
+
+app.get("/contact", (req, res) => {
+  res.render("contact");
+});
+
+app.get("/about", (req, res) => {
+  res.render("about");
+});
+
+app.listen(3000, () => {
+  console.log("Server started!!!");
 });
