@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Product Management</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="css/style.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    </head>
+    <body>
+        <h1 style="text-align: center;">Danh sách sản phẩm</h1>
+        <div class="container mt-4">
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <select class="form-select" id="categoryFilter" onchange="filterProducts()">
+                        <option value="0">Tất cả danh mục</option>
+                        <% categories.forEach(function(category) { %>
+                            <option value="<%= category.id %>"><%= category.name %></option>
+                        <% }); %>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="nameFilter" placeholder="Tìm kiếm theo tên...">
+                        <button class="btn btn-primary" type="button" onclick="filterProducts()">
+                            <i class="bi bi-search"></i> Tìm kiếm
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Tên sản phẩm</th>
+                        <th scope="col">Mô tả</th>
+                        <th scope="col">Giá</th>
+                        <th scope="col">Tồn kho</th>
+                        <th scope="col">Danh mục</th>
+                    </tr>
+                </thead>
+                <tbody id="productTableBody">
+                    <% products.forEach(function(product) { %>
+                        <tr class="product-row" data-category="<%= product.category_id %>">
+                            <td><%= product.id %></td>
+                            <td class="product-name"><%= product.name %></td>
+                            <td><%= product.description %></td>
+                            <td><%= product.price.toLocaleString('vi-VN') %> ₫</td>
+                            <td><%= product.stock %></td>
+                            <td><%= categories.find(c => c.id === product.category_id).name %></td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        </div>
+
+        <script>
+            function filterProducts() {
+                const categoryId = parseInt(document.getElementById('categoryFilter').value);
+                const searchText = document.getElementById('nameFilter').value.toLowerCase();
+                const rows = document.getElementsByClassName('product-row');
+                
+                for (let row of rows) {
+                    const rowCategoryId = parseInt(row.getAttribute('data-category'));
+                    const productName = row.querySelector('.product-name').textContent.toLowerCase();
+                    
+                    const matchesCategory = categoryId === 0 || categoryId === rowCategoryId;
+                    const matchesName = productName.includes(searchText);
+                    
+                    if (matchesCategory && matchesName) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                }
+            }
+
+            // Add event listener for Enter key
+            document.getElementById('nameFilter').addEventListener('keypress', function(event) {
+                if (event.key === 'Enter') {
+                    filterProducts();
+                }
+            });
+        </script>
+    </body>
+</html>
